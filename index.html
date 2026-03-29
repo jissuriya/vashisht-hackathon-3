@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FoodBridge - Reduce Waste, Share Food</title>
+  <meta name="description" content="A platform connecting food donors with NGOs and volunteers to redistribute surplus food.">
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="brand">
+        <svg xmlns="http://www.w3.org/-2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-compass"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+        FoodBridge
+      </a>
+      <div class="nav-links">
+        <a href="#about">About</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="auth.html" class="btn btn-primary">Login / Sign Up</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero animate-fade-in">
+      <div class="container">
+        <h1>Stop Food Waste. <br/> Feed Communities.</h1>
+        <p>Connect surplus food from restaurants and events with NGOs, food banks, and volunteers ready to deliver.</p>
+        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+          <a href="auth.html?role=donor" class="btn btn-primary" style="font-size: 1.125rem; padding: 0.75rem 1.5rem;">Donate Food</a>
+          <a href="auth.html?role=volunteer" class="btn btn-outline" style="font-size: 1.125rem; padding: 0.75rem 1.5rem;">Become a Delivery Partner</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Global Impact Section -->
+    <section class="container py-12" style="padding-top: 2rem; padding-bottom: 2rem;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+        <div class="stat-card">
+          <h3 id="global-meals">0</h3>
+          <p>Meals Shared</p>
+        </div>
+        <div class="stat-card">
+          <h3 id="global-co2">0kg</h3>
+          <p>CO₂ Emissions Prevented</p>
+        </div>
+        <div class="stat-card">
+          <h3 id="global-donations">0</h3>
+          <p>Successful Deliveries</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="how-it-works" class="container py-12">
+      <h2 class="text-center mb-4">How FoodBridge Works</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem;">
+        
+        <div class="card text-center" style="padding: 2rem;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">🍽️</div>
+          <h3>1. Post Surplus</h3>
+          <p>Restaurants or event organizers quickly list their surplus food before it goes to waste.</p>
+        </div>
+
+        <div class="card text-center" style="padding: 2rem;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">🏢</div>
+          <h3>2. Claim Needed Food</h3>
+          <p>NGOs and food banks see exactly what's available and claim the food for their communities.</p>
+        </div>
+
+        <div class="card text-center" style="padding: 2rem;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">🚴</div>
+          <h3>3. Delivery Partner Transport</h3>
+          <p>Local delivery partners get notified and transport the food safely from donor to receiver.</p>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer style="background-color: var(--color-dark); color: var(--color-white); padding: 3rem 0; text-align: center; margin-top: 4rem;">
+    <div class="container">
+      <p>&copy; 2026 FoodBridge Platform. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
+
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Calculate global impact
+      const stats = await calculateImpactStats(); // No userId = global
+      document.getElementById('global-meals').textContent = stats.meals;
+      document.getElementById('global-co2').textContent = stats.co2Saved + 'kg';
+      document.getElementById('global-donations').textContent = stats.donationsCount;
+    });
+  </script>
+</body>
+</html>

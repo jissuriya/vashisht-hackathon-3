@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Receiver Dashboard - FoodBridge</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    @media (max-width: 768px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .food-card {
+      padding: 1.5rem;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      margin-bottom: 1rem;
+      background: var(--color-white);
+      transition: box-shadow var(--transition-fast);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .food-card:hover { box-shadow: var(--shadow-sm); }
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  
+  <nav class="navbar">
+    <div class="container">
+      <a href="../index.html" class="brand">FoodBridge</a>
+      <div class="nav-links">
+        <span id="user-greeting" style="font-weight: 600; color: var(--color-dark);"></span>
+        
+        <div class="notification-container">
+          <button class="bell-btn" id="notification-bell" onclick="toggleNotifications()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bell"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+            <span class="notification-badge" id="notification-badge">0</span>
+          </button>
+          <div class="notification-dropdown" id="notification-list" style="display: none;">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <button onclick="handleLogout()" class="btn btn-outline" style="padding: 0.35rem 0.75rem;">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container py-12">
+    <h1>Receiver Dashboard</h1>
+    <p>Browse available surplus food and claim it for your organization.</p>
+
+    <div class="dashboard-grid">
+      <!-- Available Listings -->
+      <div>
+        <h2 style="font-size: 1.5rem; margin-bottom: 1rem;">Available Food</h2>
+        
+        <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+          <input type="text" id="map-search-receiver" class="form-control" placeholder="Search new area (e.g. New Delhi)...">
+          <button type="button" id="btn-search-receiver" class="btn btn-outline" style="padding: 0.5rem 1rem;">Search</button>
+          <button type="button" id="btn-location-receiver" class="btn btn-primary" style="padding: 0.5rem 1rem;" title="Use My GPS Location">📍 My Location</button>
+        </div>
+        
+        <div id="receiver-map" style="height: 300px; margin-bottom: 1.5rem; background: #eaeaea; border-radius: var(--radius-md); z-index: 1;"></div>
+        <div id="available-container">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+
+      <!-- My Claims -->
+      <div>
+        <div class="card card-body">
+          <h2 style="font-size: 1.25rem; margin-bottom: 1.5rem;">My Claims</h2>
+          <div id="claimed-container">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Modal for Confirmation -->
+  <div id="claim-modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 100;">
+    <div class="card" style="width: 90%; max-width: 500px; padding: 2rem; max-height: 90vh; overflow-y: auto;">
+      <h3 style="margin-top: 0;">Claim & Delivery Details</h3>
+      <p>Claiming: <strong id="modal-item-name"></strong></p>
+      
+      <div class="form-group" style="margin-top: 1rem; margin-bottom: 1rem;">
+        <label class="form-label" style="display: flex; gap: 0.5rem; align-items: center; cursor: pointer;">
+          <input type="checkbox" id="delivery-needed-checkbox" checked onchange="toggleDeliveryFields()">
+          <strong>I need a Delivery Partner</strong> (Uncheck if you will pick it up yourself)
+        </label>
+      </div>
+      
+      <div id="delivery-fields-container" class="form-group" style="margin-top: 1rem;">
+        <label class="form-label">Where to deliver?</label>
+        <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+          <input type="text" id="delivery-address" class="form-control" placeholder="Search address or enter manually..." required>
+          <button type="button" id="btn-delivery-search" class="btn btn-outline" style="padding: 0.5rem;">Search</button>
+          <button type="button" id="btn-delivery-location" class="btn btn-primary" style="padding: 0.5rem;">📍 Auto</button>
+        </div>
+        <div id="modal-map" style="height: 200px; background: #eaeaea; border-radius: var(--radius-md);"></div>
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+        <button id="confirm-claim-btn" class="btn btn-primary" style="flex: 1;">Confirm Claim</button>
+        <button onclick="closeModal()" class="btn btn-outline" style="flex: 1;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
+
+  <script src="../js/app.js"></script>
+  <script src="../js/receiver-dashboard.js"></script>
+</body>
+</html>
