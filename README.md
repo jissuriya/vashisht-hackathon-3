@@ -14,9 +14,9 @@ Millions of tons of food are wasted every day while many people struggle with hu
 
 FoodBridge solves this by connecting:
 
-* 🍽️ **Donors** (restaurants, events) to share surplus food
-* 🏢 **Receivers** (NGOs, food banks) to claim food
-* 🚴 **Volunteers** to deliver food safely
+*  **Donors** (restaurants, events) to share surplus food
+*  **Receivers** (NGOs, food banks) to claim food
+*  **Volunteers** to deliver food safely
 
 ---
 
@@ -122,10 +122,10 @@ index.html
 
 ## 🔮 Future Improvements
 
-* 🔔 Real-time notifications
-* 🤖 AI-based demand prediction
-* 🗺️ Route optimization for delivery
-* 📱 Mobile app version
+*  Real-time notifications
+*  AI-based demand prediction
+*  Route optimization for delivery
+*  Mobile app version
 
 ---
 
